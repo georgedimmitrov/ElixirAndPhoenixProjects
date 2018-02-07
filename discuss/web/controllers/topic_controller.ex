@@ -8,6 +8,7 @@ defmodule Discuss.TopicController do
 
   # show all topics
   def index(conn, _params) do
+    IO.inspect(conn.assigns)
     # get all topics in DB
     topics = Repo.all(Topic)
 
