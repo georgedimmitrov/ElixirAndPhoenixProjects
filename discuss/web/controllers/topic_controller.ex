@@ -4,6 +4,10 @@ defmodule Discuss.TopicController do
   # instead of using Discuss.Topic use Topic throughout file
   alias Discuss.Topic
 
+  # use this plug only for functions in []
+  plug Discuss.Plugs.RequireAuth when action in [:new, :create, :edit, :update, :delete]
+  plug :check_topic_owner when action in [:update, :edit, :delete]
+
   # function name should match template file name (new.html.eex)
 
   # show all topics
@@ -23,7 +27,11 @@ defmodule Discuss.TopicController do
   end
 
   def create(conn, %{"topic" => topic}) do
-    changeset = Topic.changeset(%Topic{}, topic)
+    # conn.assigns.user and conn.assigns[:user] both return the current user
+    changeset = conn.assigns.user
+      # add relationship user has a topic associated with it
+      |> build_assoc(:topics)
+      |> Topic.changeset(topic)
 
     case Repo.insert(changeset) do
       {:ok, _topic} ->
@@ -67,5 +75,20 @@ defmodule Discuss.TopicController do
     conn
     |> put_flash(:info, "Topic Deleted")
     |> redirect(to: topic_path(conn, :index))
+  end
+
+  # function plug since it is specific for this controller
+  def check_topic_owner(conn, _params) do
+    %{params: %{"id" => topic_id}} = conn
+
+    # fetch topic that user is trying to access and if its id == user's id -> let conn pass
+    if Repo.get(Topic, topic_id).user_id == conn.assigns.user.id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You cannot edit what you do not own.")
+      |> redirect(to: topic_path(conn, :index))
+      |> halt()
+    end
   end
 end
