@@ -1,5 +1,13 @@
 # Discuss
 
+Semi-Simple Phoenix App (project generated version 1.2)
+
+### Main Features: 
+  * Registration (via Github) and Login functionality
+  * Topic creation assosicated with user
+  * Adding Comments for each topic - each comment is dynamically pushed to all users via websockets
+  * Secured routes only accessible if user is logged in and if owner of topic
+
 To start your Phoenix app:
 
   * Install dependencies with `mix deps.get`

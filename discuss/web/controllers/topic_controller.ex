@@ -77,6 +77,13 @@ defmodule Discuss.TopicController do
     |> redirect(to: topic_path(conn, :index))
   end
 
+  def show(conn, %{"id" => topic_id}) do
+    # get! returns 404 error if not found
+    topic = Repo.get!(Topic, topic_id)
+
+    render conn, "show.html", topic: topic
+  end
+
   # function plug since it is specific for this controller
   def check_topic_owner(conn, _params) do
     %{params: %{"id" => topic_id}} = conn

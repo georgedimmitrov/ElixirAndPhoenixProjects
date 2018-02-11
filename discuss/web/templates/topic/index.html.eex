@@ -3,7 +3,7 @@
 <ul class="collection">
   <%= for topic <- @topics do %>
     <li class="collection-item">
-      <%= topic.title %>
+      <%= link topic.title, to: topic_path(@conn, :show, topic) %>
 
       <%# if current user owns the topic - show edit/delete buttons %>
       <%= if @conn.assigns.user.id == topic.user_id do %>
